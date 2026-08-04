@@ -3,8 +3,16 @@
 This repo is the source of truth for the collapsible resource directory on
 [appnapeds.org/resources](https://appnapeds.org/resources/). Editing
 [`resources.md`](resources.md) and pushing to `main` automatically updates the
-live page — the page keeps its current look (same accordion widget, same
-styling); only the link content comes from here.
+live page.
+
+The page originally used the "Easy Accordion" WordPress plugin, but that
+plugin only loads its CSS/JS when it detects its own shortcode in the page
+content — since we push fully-rendered HTML instead of a shortcode, the
+sync script generates its own small self-contained CSS/JS for the
+collapse/expand behavior (see `buildAccordionHtml` in
+[`scripts/sync-to-wordpress.js`](scripts/sync-to-wordpress.js)) instead of
+depending on the plugin. Visually it's styled to match, but it's not the
+plugin's own markup.
 
 ## Editing the directory
 

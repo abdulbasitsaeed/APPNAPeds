@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 'use strict';
 
-// Parses resources.md and pushes the rendered accordion HTML into the
-// APPNA Peds "Resources" WordPress page (https://appnapeds.org/resources/)
-// via the WP REST API, so the page keeps its existing look (Easy Accordion
-// plugin markup) while the link list is sourced from this repo.
+// Parses resources.md and pushes a self-contained collapsible accordion
+// (own inline CSS/JS, no plugin dependency) into the APPNA Peds "Resources"
+// WordPress page (https://appnapeds.org/resources/) via the WP REST API, so
+// the link list is sourced from this repo but still renders as a
+// collapsible directory.
 
 const fs = require('fs');
 const path = require('path');
@@ -63,16 +64,30 @@ function parseResources(markdown) {
   return categories;
 }
 
+// Self-contained accordion: its own CSS and a small vanilla-JS toggle, so it
+// renders and works regardless of whether the Easy Accordion plugin's own
+// assets are loaded on this page. (That plugin only enqueues its CSS/JS when
+// it detects its own shortcode in the page content — see README for why we
+// don't rely on it.)
 function buildAccordionHtml(categories) {
   const wrapperId = 'sp-ea-982';
-  const outerId = 'sp_easy_accordion-1780310928';
 
-  const style = `<style>#${wrapperId} .spcollapsing { height: 0; overflow: hidden; transition-property: height;transition-duration: 300ms;}#${wrapperId}.sp-easy-accordion>.sp-ea-single {margin-bottom: 10px; border: 1px none transparent; }#${wrapperId}.sp-easy-accordion>.sp-ea-single>.ea-header a {color: #444;}#${wrapperId}.sp-easy-accordion>.sp-ea-single>.sp-collapse>.ea-body {background: #fff; color: #444;}#${wrapperId}.sp-easy-accordion>.sp-ea-single {background: transparent;}#${wrapperId}.sp-easy-accordion>.sp-ea-single>.ea-header a .ea-expand-icon { float: left; color: #444;font-size: 16px;}</style>`;
+  const style = `<style>
+#${wrapperId} { }
+#${wrapperId} .ea-card { margin-bottom: 10px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden; }
+#${wrapperId} .ea-header { margin: 0; }
+#${wrapperId} .ea-header a { display: block; padding: 12px 15px; color: #444; text-decoration: none; cursor: pointer; font-weight: 600; background: #f7f7f7; }
+#${wrapperId} .ea-header a:hover { background: #efefef; }
+#${wrapperId} .ea-expand-icon { display: inline-block; width: 1em; margin-right: 6px; font-weight: bold; color: #444; }
+#${wrapperId} .ea-panel { display: none; }
+#${wrapperId} .ea-panel.is-open { display: block; }
+#${wrapperId} .ea-body { background: #fff; color: #444; padding: 12px 15px; }
+</style>`;
 
   const cards = categories
     .map((cat, i) => {
       const headerId = `ea-header-${i}`;
-      const collapseId = `collapse-${i}`;
+      const panelId = `ea-panel-${i}`;
       const title = escapeHtml(cat.title);
 
       const body = cat.items
@@ -84,12 +99,13 @@ function buildAccordionHtml(categories) {
         })
         .join('\n');
 
-      return `<div class="ea-card  sp-ea-single">
+      return `<div class="ea-card">
 \t<h3 class="ea-header">
-\t\t<a class="collapsed" id="${headerId}" role="button" data-sptoggle="spcollapse" data-sptarget="#${collapseId}" aria-controls="${collapseId}" href="#" aria-expanded="false" tabindex="0">
-\t\t<i aria-hidden="true" role="presentation" class="ea-expand-icon eap-icon-ea-expand-plus"></i> ${title}\t\t</a>
+\t\t<a class="ea-toggle" id="${headerId}" href="#" data-target="${panelId}" aria-expanded="false" aria-controls="${panelId}">
+\t\t<span class="ea-expand-icon" aria-hidden="true">+</span>${title}
+\t\t</a>
 \t</h3>
-\t<div class="sp-collapse spcollapse spcollapse" id="${collapseId}" data-parent="#${wrapperId}" role="region" aria-labelledby="${headerId}">
+\t<div class="ea-panel" id="${panelId}" role="region" aria-labelledby="${headerId}">
 \t\t<div class="ea-body">
 \t\t<div class="el-p">
 ${body}
@@ -100,13 +116,31 @@ ${body}
     })
     .join('\n');
 
-  return `${style}<div id="${outerId}">
-<div id="${wrapperId}" class="sp-ea-one sp-easy-accordion" data-ea-active="ea-click" data-ea-mode="vertical" data-preloader="" data-scroll-active-item="" data-offset-to-scroll="0">
+  const script = `<script>
+(function () {
+  var wrap = document.getElementById('${wrapperId}');
+  if (!wrap || wrap.dataset.eaBound) return;
+  wrap.dataset.eaBound = '1';
+  wrap.addEventListener('click', function (e) {
+    var toggle = e.target.closest('.ea-toggle');
+    if (!toggle || !wrap.contains(toggle)) return;
+    e.preventDefault();
+    var panel = document.getElementById(toggle.getAttribute('data-target'));
+    if (!panel) return;
+    var open = panel.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    var icon = toggle.querySelector('.ea-expand-icon');
+    if (icon) icon.textContent = open ? '−' : '+';
+  });
+})();
+</script>`;
+
+  return `${style}<div id="${wrapperId}">
 
 ${cards}
 
 </div>
-</div>`;
+${script}`;
 }
 
 const INTRO_HTML = `<p>Below is a curated, deduplicated, and link-verified directory of resources for APPNA Pediatrics members, pediatricians, trainees, IMGs, medical students, researchers, and families.<br><br>Last updated: {{LAST_UPDATED}}</p>
