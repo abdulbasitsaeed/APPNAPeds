@@ -115,12 +115,14 @@ ${body}
     })
     .join('\n');
 
-  const script = `<script>
+  // No blank lines allowed inside this script: WordPress's wpautop content
+  // filter inserts <p>/</p> tags at blank lines even inside <script>, which
+  // silently breaks the JS. See README for details.
+  const scriptBody = `
 (function () {
   var wrap = document.getElementById('${wrapperId}');
   if (!wrap || wrap.dataset.eaBound) return;
   wrap.dataset.eaBound = '1';
-
   function openPanel(panel) {
     panel.classList.add('is-open');
     var target = panel.scrollHeight;
@@ -131,14 +133,12 @@ ${body}
       panel.removeEventListener('transitionend', handler);
     });
   }
-
   function closePanel(panel) {
     panel.style.height = panel.scrollHeight + 'px';
-    panel.offsetHeight; // force reflow so the browser animates from this height
+    panel.offsetHeight;
     panel.style.height = '0px';
     panel.classList.remove('is-open');
   }
-
   wrap.addEventListener('click', function (e) {
     var toggle = e.target.closest('.ea-toggle');
     if (!toggle || !wrap.contains(toggle)) return;
@@ -156,7 +156,9 @@ ${body}
     if (icon) icon.textContent = willOpen ? '−' : '+';
   });
 })();
-</script>`;
+`;
+  // Defensive: collapse any blank line that sneaks in anyway.
+  const script = `<script>${scriptBody.replace(/\n\s*\n/g, '\n')}</script>`;
 
   return `${style}<div id="${wrapperId}">
 

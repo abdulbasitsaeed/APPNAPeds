@@ -14,6 +14,12 @@ collapse/expand behavior (see `buildAccordionHtml` in
 depending on the plugin. Visually it's styled to match, but it's not the
 plugin's own markup.
 
+**Gotcha:** WordPress's `wpautop` content filter auto-inserts `<p>`/`</p>`
+tags at blank lines — including *inside* `<script>` blocks, which silently
+breaks the JS. The generated `<script>` in `buildAccordionHtml` must not
+contain any blank lines (the script also defensively collapses any that
+sneak in). Keep this in mind if you ever edit that template.
+
 ## Editing the directory
 
 Open [`resources.md`](resources.md). It's a list of categories, each with
