@@ -1,5 +1,3 @@
-# APPNA Pediatrics — Comprehensive Resource Directory
-
 Below is a curated, deduplicated, and link-verified directory of resources for APPNA Pediatrics members, pediatricians, trainees, IMGs, medical students, researchers, and families.
 
 Last updated: May 10, 2026
@@ -21,7 +19,7 @@ Last updated: May 10, 2026
 
 <details>
 
-<summary>## 1. APPNA Pediatrics Official Channels</summary>
+<summary> ## 1. APPNA Pediatrics Official Channels </summary>
 
 ## 1. APPNA Pediatrics Official Channels
 
