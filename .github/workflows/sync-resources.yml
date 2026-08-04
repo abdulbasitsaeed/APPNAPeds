@@ -1,0 +1,28 @@
+name: Sync resources to WordPress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'resources.md'
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Sync resources.md to the WordPress Resources page
+        env:
+          WP_URL: ${{ secrets.WP_URL }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+          WP_PAGE_ID: ${{ secrets.WP_PAGE_ID }}
+        run: node scripts/sync-to-wordpress.js
