@@ -99,11 +99,11 @@ function buildAccordionHtml(categories) {
         .join('\n');
 
       return `<div class="ea-card">
-\t<h3 class="ea-header">
+\t<h4 class="ea-header">
 \t\t<a class="ea-toggle" id="${headerId}" href="#" data-target="${panelId}" aria-expanded="false" aria-controls="${panelId}">
 \t\t<span class="ea-expand-icon" aria-hidden="true">+</span>${title}
 \t\t</a>
-\t</h3>
+\t</h4>
 \t<div class="ea-panel" id="${panelId}" role="region" aria-labelledby="${headerId}">
 \t\t<div class="ea-body">
 \t\t<div class="el-p">
