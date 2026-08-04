@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'resources.md'
+      - 'scripts/sync-to-wordpress.js'
+      - '.github/workflows/sync-resources.yml'
   workflow_dispatch: {}
 
 jobs:
