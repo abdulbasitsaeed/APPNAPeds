@@ -79,8 +79,7 @@ function buildAccordionHtml(categories) {
 #${wrapperId} .ea-header a { display: block; padding: 12px 15px; color: #444; text-decoration: none; cursor: pointer; font-weight: 600; background: #f7f7f7; }
 #${wrapperId} .ea-header a:hover { background: #efefef; }
 #${wrapperId} .ea-expand-icon { display: inline-block; width: 1em; margin-right: 6px; font-weight: bold; color: #444; }
-#${wrapperId} .ea-panel { display: none; }
-#${wrapperId} .ea-panel.is-open { display: block; }
+#${wrapperId} .ea-panel { height: 0; overflow: hidden; transition: height 300ms ease; }
 #${wrapperId} .ea-body { background: #fff; color: #444; padding: 12px 15px; }
 </style>`;
 
@@ -121,16 +120,40 @@ ${body}
   var wrap = document.getElementById('${wrapperId}');
   if (!wrap || wrap.dataset.eaBound) return;
   wrap.dataset.eaBound = '1';
+
+  function openPanel(panel) {
+    panel.classList.add('is-open');
+    var target = panel.scrollHeight;
+    panel.style.height = target + 'px';
+    panel.addEventListener('transitionend', function handler(e) {
+      if (e.propertyName !== 'height') return;
+      panel.style.height = 'auto';
+      panel.removeEventListener('transitionend', handler);
+    });
+  }
+
+  function closePanel(panel) {
+    panel.style.height = panel.scrollHeight + 'px';
+    panel.offsetHeight; // force reflow so the browser animates from this height
+    panel.style.height = '0px';
+    panel.classList.remove('is-open');
+  }
+
   wrap.addEventListener('click', function (e) {
     var toggle = e.target.closest('.ea-toggle');
     if (!toggle || !wrap.contains(toggle)) return;
     e.preventDefault();
     var panel = document.getElementById(toggle.getAttribute('data-target'));
     if (!panel) return;
-    var open = panel.classList.toggle('is-open');
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    var willOpen = !panel.classList.contains('is-open');
+    if (willOpen) {
+      openPanel(panel);
+    } else {
+      closePanel(panel);
+    }
+    toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
     var icon = toggle.querySelector('.ea-expand-icon');
-    if (icon) icon.textContent = open ? '−' : '+';
+    if (icon) icon.textContent = willOpen ? '−' : '+';
   });
 })();
 </script>`;
