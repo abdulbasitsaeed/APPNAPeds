@@ -1,8 +1,6 @@
 ## 1. APPNA Pediatrics Official Channels
 
 - [APPNA Peds Official Website](https://appnapeds.org/): Home of APPNA Pediatrics — programs, leadership, events, and member services.
-- [APPNA Peds Official Website](https://appnapeds.org/): Home of APPNA Pediatrics — programs, leadership, events, and member services.
-- [APPNA Peds Official Website](https://appnapeds.org/): Home of APPNA Pediatrics — programs, leadership, events, and member services.
 - [APPNA Peds About Page](https://appnapeds.org/about/): Mission, history, and structure of the APPNA Pediatrics specialty network.
 - [Membership](https://appnapeds.org/membership/): Join, renew, or learn about membership categories and benefits.
 - [Executive Committee](https://appnapeds.org/about/executive-committee/): Current officers andleadership team.
