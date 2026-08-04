@@ -31,3 +31,15 @@ Last updated: May 10, 2026
 
 **[APPNA Peds Official Website:](https://appnapeds.org/)** Home of APPNA Pediatrics — programs, leadership, events, and member services.
 
+---
+
+<details>
+<summary>Click to expand</summary>
+
+Here is a [proper link](https://example.com) that will render correctly.
+
+- It also works for lists
+- And other markdown
+
+</details>
+
