@@ -19,13 +19,13 @@ Last updated: May 10, 2026
 
 <details>
 
-<summary> ## 1. APPNA Pediatrics Official Channels </summary>
+<summary> # 1. APPNA Pediatrics Official Channels </summary>
 
-## 1. APPNA Pediatrics Official Channels
+**[APPNA Peds Official Website:](https://appnapeds.org/)** Home of APPNA Pediatrics — programs, leadership, events, and member services.
 
 </details>
 
-**[APPNA Peds Official Website:](https://appnapeds.org/)** Home of APPNA Pediatrics — programs, leadership, events, and member services.
+
 
 
 # Hello Worlds
