@@ -74,7 +74,7 @@ function buildAccordionHtml(categories) {
 
   const style = `<style>
 #${wrapperId} { }
-#${wrapperId} .ea-card { margin-bottom: 10px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden; }
+#${wrapperId} .ea-card { margin-bottom: 10px; border-radius: 4px; overflow: hidden; }
 #${wrapperId} .ea-header { margin: 0; line-height: 1.0; }
 #${wrapperId} .ea-header a { display: block; padding: 0px 5px; color: #444; text-decoration: none; cursor: pointer; font-weight: 600; }
 #${wrapperId} .ea-expand-icon { display: inline-block; width: 1em; margin-right: 6px; font-weight: bold; color: #444; }
