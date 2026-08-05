@@ -30,14 +30,19 @@ bullet-point links:
 
 - [Link Title](https://example.com): One or two line description.
 - [Another Link](https://example.org): Description of this one.
+A plain sentence like this is also fine — it renders as its own paragraph.
 ```
 
 - A category is any line starting with `## `.
 - A link is any line shaped exactly like `- [Title](url): description`.
-- Order in the file is the order the categories/links appear on the page.
-- Don't add anything else (no other Markdown syntax) — the sync script only
-  understands these two line shapes and will fail the GitHub Action if it
-  finds a line it doesn't recognize, rather than silently dropping content.
+- Any other non-blank line is treated as plain text and rendered as its own
+  paragraph inside the current category — useful for a short note that
+  isn't a link.
+- Plain text (and links) must come after a `## Category` heading — there's
+  nowhere to put a line that isn't inside some category yet.
+- Order in the file is the order the categories/links/text appear on the page.
+- No other Markdown syntax (bold, nested lists, code blocks, etc.) is
+  rendered specially — it'll show up as literal characters, not formatted.
 
 Commit and push to `main` (or merge a PR into `main`) and the
 **Sync resources to WordPress** Action will push the update within a minute

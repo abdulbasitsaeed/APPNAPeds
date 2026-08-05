@@ -34,6 +34,9 @@ function escapeHtml(str) {
 //   ## Category Title
 //
 //   - [Link Title](https://example.com): One or two line description.
+//
+// Any other non-blank line inside a category is treated as a plain-text
+// note and rendered as its own paragraph in that category's panel.
 function parseResources(markdown) {
   const categories = [];
   let current = null;
@@ -54,11 +57,14 @@ function parseResources(markdown) {
       if (!current) {
         throw new Error(`Found a link line before any "## Category" heading: "${line}"`);
       }
-      current.items.push({ title: item[1].trim(), url: item[2].trim(), description: item[3].trim() });
+      current.items.push({ type: 'link', title: item[1].trim(), url: item[2].trim(), description: item[3].trim() });
       continue;
     }
 
-    throw new Error(`Line didn't match a "## Category" heading or a "- [Title](url): description" link: "${line}"`);
+    if (!current) {
+      throw new Error(`Found text before any "## Category" heading: "${line}"`);
+    }
+    current.items.push({ type: 'text', text: line });
   }
 
   return categories;
@@ -90,6 +96,9 @@ function buildAccordionHtml(categories) {
 
       const body = cat.items
         .map((item) => {
+          if (item.type === 'text') {
+            return `<p dir="auto">${escapeHtml(item.text)}</p>`;
+          }
           const t = escapeHtml(item.title);
           const url = escapeHtml(item.url);
           const desc = escapeHtml(item.description);
@@ -198,8 +207,9 @@ async function main() {
     throw new Error(`No categories parsed from ${DATA_FILE} — aborting so we don't wipe the live page.`);
   }
 
-  const totalLinks = categories.reduce((n, c) => n + c.items.length, 0);
-  console.log(`Parsed ${categories.length} categories, ${totalLinks} links from ${DATA_FILE}`);
+  const totalLinks = categories.reduce((n, c) => n + c.items.filter((i) => i.type === 'link').length, 0);
+  const totalText = categories.reduce((n, c) => n + c.items.filter((i) => i.type === 'text').length, 0);
+  console.log(`Parsed ${categories.length} categories, ${totalLinks} links, ${totalText} text lines from ${DATA_FILE}`);
 
   const intro = INTRO_HTML.replace('{{LAST_UPDATED}}', formatDate(new Date()));
   const content = `${intro}\n${buildAccordionHtml(categories)}`;
