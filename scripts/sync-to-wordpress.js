@@ -36,8 +36,12 @@ function escapeHtml(str) {
 //   - [Link Title](https://example.com): One or two line description.
 //
 // Any other non-blank line inside a category is treated as a plain-text
-// note and rendered as its own paragraph in that category's panel.
+// note and rendered as its own paragraph in that category's panel. Plain
+// text before the first category heading is allowed too — it becomes a
+// preamble rendered above the accordion. A link before the first heading
+// still errors, since there's no panel to put it in.
 function parseResources(markdown) {
+  const preamble = [];
   const categories = [];
   let current = null;
 
@@ -62,12 +66,17 @@ function parseResources(markdown) {
     }
 
     if (!current) {
-      throw new Error(`Found text before any "## Category" heading: "${line}"`);
+      preamble.push(line);
+    } else {
+      current.items.push({ type: 'text', text: line });
     }
-    current.items.push({ type: 'text', text: line });
   }
 
-  return categories;
+  return { preamble, categories };
+}
+
+function buildPreambleHtml(preamble) {
+  return preamble.map((line) => `<p dir="auto">${escapeHtml(line)}</p>`).join('\n');
 }
 
 // Self-contained accordion: its own CSS and a small vanilla-JS toggle, so it
@@ -201,7 +210,7 @@ function formatDate(date) {
 
 async function main() {
   const markdown = fs.readFileSync(DATA_FILE, 'utf8');
-  const categories = parseResources(markdown);
+  const { preamble, categories } = parseResources(markdown);
 
   if (categories.length === 0) {
     throw new Error(`No categories parsed from ${DATA_FILE} — aborting so we don't wipe the live page.`);
@@ -209,10 +218,13 @@ async function main() {
 
   const totalLinks = categories.reduce((n, c) => n + c.items.filter((i) => i.type === 'link').length, 0);
   const totalText = categories.reduce((n, c) => n + c.items.filter((i) => i.type === 'text').length, 0);
-  console.log(`Parsed ${categories.length} categories, ${totalLinks} links, ${totalText} text lines from ${DATA_FILE}`);
+  console.log(
+    `Parsed ${preamble.length} preamble lines, ${categories.length} categories, ${totalLinks} links, ${totalText} text lines from ${DATA_FILE}`
+  );
 
   const intro = INTRO_HTML.replace('{{LAST_UPDATED}}', formatDate(new Date()));
-  const content = `${intro}\n${buildAccordionHtml(categories)}`;
+  const preambleHtml = buildPreambleHtml(preamble);
+  const content = `${intro}\n${preambleHtml}\n${buildAccordionHtml(categories)}`;
 
   const endpoint = `${WP_URL.replace(/\/$/, '')}/wp-json/wp/v2/pages/${WP_PAGE_ID}`;
   const auth = Buffer.from(`${WP_USER}:${WP_APP_PASSWORD}`).toString('base64');

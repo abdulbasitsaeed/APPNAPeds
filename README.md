@@ -38,9 +38,12 @@ A plain sentence like this is also fine — it renders as its own paragraph.
 - Any other non-blank line is treated as plain text and rendered as its own
   paragraph inside the current category — useful for a short note that
   isn't a link.
-- Plain text (and links) must come after a `## Category` heading — there's
-  nowhere to put a line that isn't inside some category yet.
-- Order in the file is the order the categories/links/text appear on the page.
+- Plain text lines *before* the first `## Category` heading are allowed too
+  — they become a preamble rendered above the accordion, in file order.
+  A link line before the first heading still errors, since there's no
+  panel to put it in.
+- Order in the file is the order the preamble/categories/links/text appear
+  on the page.
 - No other Markdown syntax (bold, nested lists, code blocks, etc.) is
   rendered specially — it'll show up as literal characters, not formatted.
 
